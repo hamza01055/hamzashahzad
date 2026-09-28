@@ -1,0 +1,398 @@
+@import 'tailwindcss';
+
+/* Editorial type: serif headings, Outfit body, mono labels.
+   Fonts are loaded from Google Fonts in index.html. */
+@theme {
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Outfit', 'Segoe UI', sans-serif;
+  --font-eyebrow: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+}
+
+/* Serif headings across the public site (the .site root in App.jsx).
+   In the base layer, so a heading's own utility classes can still override it. */
+@layer base {
+  .site :is(h1, h2, h3) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Italic accent word with a violet-to-pink gradient. */
+.text-gradient-accent,
+.text-gradient-accent-dark {
+  background-image: linear-gradient(90deg, #5b3df5 0%, #b026e0 50%, #f0189a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.text-gradient-accent-dark {
+  background-image: linear-gradient(90deg, #9d8bff 0%, #d46bff 50%, #ff6cc4 100%);
+}
+
+:root {
+  font-family: Inter, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1a1a1a;
+  background: #f5f4f0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f5f4f0;
+  color: #1a1a1a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.glass-dark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: rgba(8, 9, 13, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 60px rgba(8, 9, 13, 0.16);
+  transition: border-color 300ms ease, box-shadow 300ms ease;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.glass-dark-card {
+  position: relative;
+  isolation: isolate;
+  background: rgba(17, 20, 28, 0.58);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 18px 45px rgba(8, 9, 13, 0.2);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.glass-dark::before,
+.glass-dark-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.1) 48%, transparent 70%);
+  background-size: 220% 100%;
+  animation: glass-sheen 9s ease-in-out infinite;
+}
+
+.glass-dark:hover {
+  border-color: rgba(103, 232, 249, 0.38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 24px 70px rgba(8, 9, 13, 0.24);
+}
+
+.glass-dark-card {
+  transition: transform 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.glass-dark-card:hover {
+  border-color: rgba(103, 232, 249, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 20px 55px rgba(34, 211, 238, 0.14);
+}
+
+.glass-dark p,
+.glass-dark-card p {
+  color: #d1d5db;
+}
+
+.glass-dark > *,
+.glass-dark-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-dark h2,
+.glass-dark h3,
+.glass-dark h4 {
+  color: #ffffff;
+}
+
+.glass-dark .text-gray-400,
+.glass-dark-card .text-gray-400 {
+  color: #e5e7eb;
+}
+
+.glass-dark a:not(.bg-\[\#F2B56B\]):not(.bg-white),
+.glass-dark-card a {
+  color: #f9fafb;
+}
+
+@keyframes glass-sheen {
+  0%,
+  65% {
+    background-position: 160% 0;
+  }
+
+  85%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+[data-motion-hero],
+[data-motion-project-card],
+[data-motion-hover] {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-dark,
+  .glass-dark-card,
+  .glass-dark::before,
+  .glass-dark-card::before {
+    animation: none;
+    transition: none;
+  }
+
+  [data-motion-hero],
+  [data-motion-project-card],
+  [data-motion-hover] {
+    will-change: auto;
+  }
+}
+
+.skills-marquee-viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+
+.skills-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  will-change: transform;
+}
+
+.skills-marquee-left .skills-marquee-track {
+  animation: skills-marquee-left 48s linear infinite;
+}
+
+.skills-marquee-right .skills-marquee-track {
+  animation: skills-marquee-right 52s linear infinite;
+}
+
+.skills-marquee-viewport:hover .skills-marquee-track,
+.skills-marquee-viewport:focus-within .skills-marquee-track,
+.skills-marquee-viewport:active .skills-marquee-track {
+  animation-play-state: paused;
+}
+
+.skills-marquee-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 9999px;
+  padding: 0.65rem 1rem 0.65rem 0.7rem;
+  background: rgba(255, 255, 255, 0.58);
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(26, 26, 26, 0.04);
+  transition: transform 250ms ease, border-color 250ms ease, box-shadow 250ms ease, color 250ms ease;
+}
+
+.skills-marquee-pill:hover {
+  border-color: rgba(242, 181, 107, 0.8);
+  color: #1a1a1a;
+  box-shadow: 0 10px 28px rgba(242, 181, 107, 0.18);
+  transform: scale(1.04);
+}
+
+.skills-marquee-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 0.55rem;
+  background: #fdf5eb;
+  color: #a36a0b;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+@keyframes skills-marquee-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes skills-marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-marquee-viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .skills-marquee-track {
+    animation: none;
+  }
+}
+
+/* ---------- Chat assistant robot ---------- */
+.robot .robot-head,
+.robot .robot-eyes,
+.robot .robot-eye,
+.robot .robot-antenna {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.robot--bob .robot-head {
+  animation: robot-bob 3s ease-in-out infinite;
+}
+
+.robot .robot-eye {
+  animation: robot-blink 4.5s ease-in-out infinite;
+}
+
+.robot .robot-antenna {
+  animation: robot-glow 2s ease-in-out infinite;
+}
+
+/* While a reply is being written: eyes look around, antenna blinks fast. */
+.robot--thinking .robot-eyes {
+  animation: robot-look 1.6s ease-in-out infinite;
+}
+
+.robot--thinking .robot-antenna {
+  animation-duration: 0.6s;
+}
+
+/* Hovering the launcher: the robot tilts its head. */
+.chat-launcher:hover .robot-head {
+  animation: robot-tilt 0.9s ease-in-out;
+}
+
+/* Attention pulse around the launcher, three times, until the visitor starts chatting. */
+.robot-ring {
+  opacity: 0;
+  animation: robot-ring 1.8s ease-out 1.2s 3 forwards;
+}
+
+@keyframes robot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2.5px); }
+}
+
+@keyframes robot-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94% { transform: scaleY(0.12); }
+}
+
+@keyframes robot-glow {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 2.5px #f2b56b); }
+  50% { opacity: 0.45; filter: none; }
+}
+
+@keyframes robot-look {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes robot-tilt {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg); }
+  60% { transform: rotate(8deg); }
+}
+
+@keyframes robot-ring {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robot *,
+  .robot-ring {
+    animation: none !important;
+  }
+
+  .robot-ring {
+    opacity: 0;
+  }
+}
+
+/* ---------- GitHub activity stat cards ---------- */
+.gh-float {
+  animation: gh-float 4s ease-in-out infinite;
+}
+
+.gh-twinkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gh-twinkle 2.8s ease-in-out infinite;
+}
+
+@keyframes gh-float {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-5px); opacity: 0.9; }
+}
+
+@keyframes gh-twinkle {
+  0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.45; }
+  50% { transform: scale(1.1) rotate(15deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-float,
+  .gh-twinkle {
+    animation: none;
+  }
+}
