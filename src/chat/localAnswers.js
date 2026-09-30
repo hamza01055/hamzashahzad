@@ -2,6 +2,7 @@
 // (for example on a static host with no serverless functions). Matches the
 // question against the portfolio data with simple keyword rules.
 import { profile } from '../data/profile.js'
+import { joinTeam } from '../data/joinTeam.js'
 
 const normalize = (text) => text.toLowerCase().replace(/[^a-z0-9+#.\s/-]/g, ' ').replace(/\s+/g, ' ').trim()
 const has = (text, words) => words.some((word) => new RegExp(`(^|[^a-z0-9])${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z0-9]|$)`).test(text))
@@ -52,6 +53,16 @@ export const localAnswer = (question, { projects, team, settings }) => {
 
   if (has(text, ['hi', 'hello', 'hey', 'salam', 'assalam', 'assalamualaikum', 'aoa']) && text.split(' ').length <= 4) {
     return 'Hi! I’m Hamza’s portfolio assistant. I can help you explore Hamza’s work, find a suitable service, or share how to get in touch. What would you like to build?'
+  }
+
+  // Before contact and experience: "can I join?" and "do you offer internships?" are about joining the team.
+  if (has(text, ['join', 'joining', 'join your team', 'apply for', 'how to apply', 'can i apply', 'application', 'internships', 'internship opportunity', 'recruit', 'recruiting', 'vacancy', 'vacancies', 'openings', 'open roles', 'become a collaborator', 'work in your team'])) {
+    return [
+      joinTeam.note,
+      `Open roles: ${joinTeam.roles.map((role) => role.title).join(', ')}.`,
+      'See what each role looks for on /team, then share your role, a portfolio or GitHub link, and your skills with Hamza.',
+      contactText(settings),
+    ].join('\n')
   }
 
   if (has(text, ['discuss', 'my project', 'start a project', 'new project', 'inquiry', 'enquiry', 'requirements'])) {

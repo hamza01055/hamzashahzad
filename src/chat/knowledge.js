@@ -4,6 +4,7 @@
 import { projects } from '../data/projects.js'
 import { teamMembers } from '../data/teamMembers.js'
 import { profile } from '../data/profile.js'
+import { joinTeam } from '../data/joinTeam.js'
 import { assistantInstructions } from './assistantPrompt.js'
 
 const projectLine = (project) => [
@@ -53,6 +54,12 @@ ${projects.map(projectLine).join('\n')}
 
 # Team / collaborators
 ${team}
+
+# Joining the team
+${joinTeam.note}
+Open roles and who is a good fit:
+${joinTeam.roles.map((role) => `- ${role.title}: ${role.fit.join('; ')}`).join('\n')}
+To apply: email or WhatsApp Hamza (see Contact) with the role, a portfolio, GitHub, or LinkedIn link, and skills. Details are on /team.
 
 # Contact
 ${contact}

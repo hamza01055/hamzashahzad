@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import portfolioBackground from './assets/portfolio-background.jpg'
 import profileImage from './assets/hamza-shahzad-portrait.jpg'
 import { getProjects, getSettings, getTeam } from './data/store'
+import { joinTeam } from './data/joinTeam'
 import Chatbot from './components/Chatbot'
 import GitHubActivity from './components/GitHubActivity'
 import { currentRoute, sitePath } from './paths'
@@ -745,6 +746,54 @@ const TeamMemberCard = ({ member }) => (
   </article>
 )
 
+const joinWhatsappUrl = `${whatsappUrl}?text=${encodeURIComponent('Hi Hamza, I would like to join your team and collaborate on projects.')}`
+// Opens the visitor's email app with a short application template.
+const joinApplyUrl = `mailto:${contactEmail}?subject=${encodeURIComponent('Application to join the team')}&body=${encodeURIComponent([
+  'Hi Hamza,',
+  '',
+  'I would like to join your team.',
+  '',
+  'Name:',
+  'Role (AI / ML, Web, Mobile, UI/UX, Automation, Content & Marketing):',
+  'Portfolio / GitHub / LinkedIn:',
+  'Skills and tools:',
+  'Looking for (collaboration, internship, freelance partnership):',
+  '',
+  'Thanks!',
+].join('\n'))}`
+
+const JoinTeam = () => (
+  <Section id="join" className="py-16">
+    <SectionHeader
+      subtitle="JOIN OUR TEAM"
+      title="Join Our Team" accent="Our Team"
+      description="We collaborate with developers, AI engineers, designers, automation experts, mobile app developers, and content and marketing people on real projects."
+    />
+    <div data-reveal className="-mt-4 mb-12 flex justify-center">
+      <p className="inline-flex max-w-3xl items-start gap-2.5 rounded-2xl border border-[#eedbb5] bg-[#FDF5EB] px-5 py-3 text-left text-sm font-medium leading-relaxed text-[#8a5a09]">
+        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#F2B56B]" aria-hidden="true" />
+        {joinTeam.note}
+      </p>
+    </div>
+    <div data-reveal-group className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {joinTeam.roles.map(({ title, fit }, index) => (
+        <article key={title} className="rounded-[2rem] bg-white p-8 shadow-sm">
+          <span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span>
+          <h3 className="mt-4 text-3xl text-[#1a1a1a]">{title}</h3>
+          <ul className="mt-5 space-y-3 text-sm leading-relaxed text-[#4d4a46]">
+            {fit.map((point) => <li key={point} className="flex gap-3"><span className="mt-0.5 shrink-0"><Icons.CheckCircle /></span><span>{point}</span></li>)}
+          </ul>
+        </article>
+      ))}
+    </div>
+    <div data-reveal className="mt-12 flex flex-col justify-center gap-4 sm:flex-row">
+      <Button as="a" href={joinApplyUrl} variant="primary">Apply to Join <Icons.ArrowRight /></Button>
+      <Button as="a" href={joinWhatsappUrl} target="_blank" rel="noreferrer" variant="secondary"><span className="text-[#25D366]"><Icons.Whatsapp /></span> Message on WhatsApp</Button>
+      <Button as="a" href={`mailto:${contactEmail}`} variant="secondary"><Icons.Mail /> Email Hamza</Button>
+    </div>
+  </Section>
+)
+
 const TeamPage = () => {
   const [filter, setFilter] = useState('All')
   const filters = ['All', 'AI / ML', 'Engineering', 'Frontend', 'Backend', 'Mobile', 'Design', 'DevOps', 'QA', 'Automation']
@@ -765,6 +814,8 @@ const TeamPage = () => {
           {visibleTeam.map((member) => <TeamMemberCard key={member.id} member={member} />)}
         </div>
       </Section>
+
+      <JoinTeam />
 
       <Section className="py-16">
         <div className="rounded-[3rem] bg-[#EBE7DF] p-10 md:p-14">
@@ -1450,8 +1501,9 @@ const routeMetadata = {
     description: 'Learn about Hamza Shahzad\'s focus across artificial intelligence, machine learning, computer vision, LLM applications, and software engineering.',
   },
   '/team': {
-    title: 'Collaborators | Hamza Shahzad',
-    description: 'Meet the specialists Hamza Shahzad collaborates with across AI, software engineering, design, mobile development, and automation.',
+    title: 'Team & Collaborators | Join Hamza Shahzad’s Team',
+    description: 'Meet Hamza Shahzad’s collaborators and join the team as an AI/ML engineer, web or Flutter developer, UI/UX designer, n8n automation expert, or content partner.',
+    keywords: 'join AI team, collaborate with AI engineer, AI/ML engineer, web developer, React developer, Flutter mobile app developer, UI/UX designer, n8n automation expert, content and marketing partner, freelance partnership, AI internship Pakistan, Hamza Shahzad team',
   },
 }
 
@@ -1476,6 +1528,7 @@ export default function App() {
 
     const tags = {
       description: metadata.description,
+      ...(metadata.keywords ? { keywords: metadata.keywords } : {}),
       'og:title': metadata.title,
       'og:description': metadata.description,
       'og:url': canonicalUrl,

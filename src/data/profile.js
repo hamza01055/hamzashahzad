@@ -52,7 +52,7 @@ export const profile = {
     '/work': 'All projects',
     '/services': 'Services',
     '/about': 'About Hamza',
-    '/team': 'Collaborators',
+    '/team': 'Collaborators, and how to join the team',
     '/#contact': 'Contact form',
   },
 }
