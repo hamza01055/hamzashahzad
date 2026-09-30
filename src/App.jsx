@@ -1,11 +1,11 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import portfolioBackground from './assets/portfolio-background.jpg'
-import profileImage from './assets/hamza-shahzad-profile.png'
+import profileImage from './assets/hamza-shahzad-portrait.jpg'
 import { getProjects, getSettings, getTeam } from './data/store'
 import Chatbot from './components/Chatbot'
 import GitHubActivity from './components/GitHubActivity'
+import { currentRoute, sitePath } from './paths'
 
 // Content comes from the admin store, falling back to the files in src/data.
 const projectData = getProjects()
@@ -15,8 +15,6 @@ const contactEmail = siteSettings.contactEmail
 const whatsappUrl = `https://wa.me/${siteSettings.whatsappNumber}`
 // Opens WhatsApp with a first message ready to send (used by the navbar "Start a project" button).
 const startProjectUrl = `${whatsappUrl}?text=${encodeURIComponent('Hi Hamza, I would like to start a project.')}`
-
-gsap.registerPlugin(ScrollTrigger)
 
 const Icons = {
   Star: () => (
@@ -32,10 +30,10 @@ const Icons = {
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
   ),
   ArrowRight: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon-nudge"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
   ),
   ArrowUpRight: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon-nudge-up"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
   ),
   ArrowUp: () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" /></svg>
@@ -164,11 +162,11 @@ const withAccent = (title, accent, dark) => {
 }
 
 const SectionHeader = ({ subtitle, title, accent, description, align = 'center', rightAction = null, dark = false }) => (
-  <div className={`mb-12 ${align === 'left' ? 'text-left' : 'text-center'}`}>
+  <div data-reveal-group className={`mb-12 ${align === 'left' ? 'text-left' : 'text-center'}`}>
     <Eyebrow dark={dark} className="mb-4">{subtitle}</Eyebrow>
     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
       <div className={`${align === 'left' ? 'max-w-3xl' : 'max-w-4xl mx-auto'}`}>
-        <h2 className={`text-[2.5rem] md:text-6xl leading-[1.05] ${dark ? 'text-white' : 'text-[#1a1a1a]'}`}>{withAccent(title, accent, dark)}</h2>
+        <h2 className={`text-title ${dark ? 'text-white' : 'text-[#1a1a1a]'}`}>{withAccent(title, accent, dark)}</h2>
       </div>
       {rightAction}
     </div>
@@ -180,7 +178,7 @@ const SectionHeader = ({ subtitle, title, accent, description, align = 'center',
   </div>
 )
 
-const buttonBase = 'inline-flex items-center justify-center whitespace-nowrap leading-none transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F2B56B]'
+const buttonBase = 'inline-flex items-center justify-center gap-2 whitespace-nowrap leading-none transition duration-200 ease-out-quint hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F2B56B]'
 const buttonSizes = {
   md: 'h-12 min-w-[140px] px-5 text-sm font-semibold',
   secondary: 'h-11 min-w-[140px] px-5 text-sm font-semibold',
@@ -228,18 +226,18 @@ const Navbar = () => {
   return (
   <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#F5F4F0]/80 border-b border-[#e7e3dc]">
     <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 flex items-center justify-between h-20">
-      <a href="/" className="flex items-center gap-3" aria-label="Go to Hamza Shahzad home page">
+      <a href={sitePath('/')} className="flex items-center gap-3" aria-label="Go to Hamza Shahzad home page">
         <div>
           <div className="text-lg font-black tracking-tight">Hamza Shahzad</div>
         </div>
       </a>
 
       <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#374151]">
-        <a href="/work" className="hover:text-[#1a1a1a]">Work</a>
-        <a href="/services" className="hover:text-[#1a1a1a]">Services</a>
-        <a href="/about" className="hover:text-[#1a1a1a]">About</a>
-        <a href="/team" className="hover:text-[#1a1a1a]">Team</a>
-        <a href="/#contact" className="hover:text-[#1a1a1a]">Contact</a>
+        <a href={sitePath('/work')} className="nav-link transition-colors hover:text-[#1a1a1a]">Work</a>
+        <a href={sitePath('/services')} className="nav-link transition-colors hover:text-[#1a1a1a]">Services</a>
+        <a href={sitePath('/about')} className="nav-link transition-colors hover:text-[#1a1a1a]">About</a>
+        <a href={sitePath('/team')} className="nav-link transition-colors hover:text-[#1a1a1a]">Team</a>
+        <a href={sitePath('/#contact')} className="nav-link transition-colors hover:text-[#1a1a1a]">Contact</a>
       </nav>
 
       <div className="flex items-center gap-3">
@@ -261,7 +259,7 @@ const Navbar = () => {
       <nav className="md:hidden border-t border-[#e7e3dc] bg-[#F5F4F0]/95 px-4 py-4 shadow-lg" aria-label="Mobile navigation">
         <div className="mx-auto flex max-w-7xl flex-col gap-1">
           {mobileLinks.map(([label, href]) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold text-[#374151] transition hover:bg-white hover:text-[#1a1a1a]">
+            <a key={href} href={sitePath(href)} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold text-[#374151] transition hover:bg-white hover:text-[#1a1a1a]">
               {label}
             </a>
           ))}
@@ -277,12 +275,12 @@ const Hero = () => (
     <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] items-center gap-14">
       <div>
         {siteSettings.showAvailability && siteSettings.availabilityText && (
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#eedbb5] bg-[#FDF5EB] px-4 py-2 font-eyebrow text-xs font-semibold uppercase tracking-[0.12em] text-[#a36a0b]">
+          <div data-motion-hero="badge" className="inline-flex items-center gap-2 rounded-full border border-[#eedbb5] bg-[#FDF5EB] px-4 py-2 font-eyebrow text-xs font-semibold uppercase tracking-[0.12em] text-[#a36a0b]">
             <span className="w-2 h-2 rounded-full bg-[#F2B56B]" /> {siteSettings.availabilityText}
           </div>
         )}
 
-        <h1 data-motion-hero="headline" className="mt-8 text-5xl md:text-7xl leading-none text-[#1a1a1a]">
+        <h1 data-motion-hero="headline" className="mt-8 text-display text-[#1a1a1a]">
           I build intelligent<br />systems into <Accent>products</Accent>
         </h1>
 
@@ -290,14 +288,14 @@ const Hero = () => (
           I’m Hamza Shahzad, an AI Engineer, Python Developer, and Machine Learning Engineer focused on building practical AI applications with Python, FastAPI, LangChain, LangGraph, and RAG.
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
-          <Button as="a" data-motion-hover href="#work" variant="primary">
+        <div data-motion-hero="actions" className="mt-10 flex flex-col sm:flex-row items-start gap-4">
+          <Button as="a" href="#work" variant="primary">
             View projects <Icons.ArrowRight />
           </Button>
-          <Button as="a" data-motion-hover href="#contact" variant="secondary">Start a conversation</Button>
+          <Button as="a" href="#contact" variant="secondary">Start a conversation</Button>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-xl">
+        <div data-motion-hero="stats" className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-xl">
           {[
             ['AI', 'Core specialization'],
             ['BS AI', 'Academic foundation'],
@@ -318,11 +316,27 @@ const Hero = () => (
       </div>
     </div>
 
-    <div className="mt-16">
+    <div data-reveal className="mt-16">
       <span className="font-eyebrow mb-4 block text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">Open source · live from GitHub</span>
       <GitHubActivity />
     </div>
   </Section>
+)
+
+// Large serif band between the hero and the work grid. Decorative: every phrase appears in the services below.
+const marqueePhrases = ['AI Systems', 'LLM Applications', 'Computer Vision', 'AI Agents', 'SaaS Products', 'Automation']
+
+const TypeMarquee = () => (
+  <div data-reveal className="type-marquee border-y border-[#e7e3dc] py-6 md:py-9" aria-hidden="true">
+    <div className="type-marquee-track">
+      {[...marqueePhrases, ...marqueePhrases].map((phrase, index) => (
+        <span key={`${phrase}-${index}`} className="type-marquee-item font-display text-[clamp(2.75rem,1.6rem+4.8vw,6rem)] leading-[1.1] tracking-[-0.02em] text-[#1a1a1a]">
+          {index % 2 ? <Accent>{phrase}</Accent> : phrase}
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-[0.38em] w-[0.38em] text-[#F2B56B]"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" /></svg>
+        </span>
+      ))}
+    </div>
+  </div>
 )
 
 const technologyLogos = {
@@ -459,18 +473,18 @@ const Projects = () => {
         description="A selection of intelligent systems, software products, and digital experiences built across AI, web, SaaS, and automation."
       />
 
-      <div className="mb-12 flex gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center md:overflow-visible">
+      <div data-reveal className="mb-12 flex gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center md:overflow-visible">
         {filters.map((item) => (
           <Pill key={item} active={filter === item} onClick={() => setFilter(item)}>{item}</Pill>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-7 md:grid-cols-2">
+      <div data-reveal-group className="grid grid-cols-1 gap-7 md:grid-cols-2">
         {visibleProjects.map((project) => (
-          <article key={project.id} data-motion-project-card data-motion-hover className="group overflow-hidden rounded-[1.75rem] border border-[#e7e3dc] bg-white shadow-sm transition-shadow duration-300 hover:shadow-xl">
+          <article key={project.id} className="group overflow-hidden rounded-[1.75rem] border border-[#e7e3dc] bg-white shadow-sm transition duration-300 ease-out-quint hover:-translate-y-1 hover:shadow-xl">
             <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
               <img src={project.image} alt={project.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <Button as="a" href={`/work/${project.slug}`} aria-label={`View ${project.title}`} variant="icon" size="icon" className="absolute right-5 top-5">
+              <Button as="a" href={sitePath(`/work/${project.slug}`)} aria-label={`View ${project.title}`} variant="icon" size="icon" className="absolute right-5 top-5">
                 <Icons.ArrowUpRight />
               </Button>
             </div>
@@ -490,15 +504,15 @@ const Projects = () => {
           </article>
         ))}
       </div>
-      <div className="mt-14 text-center">
-        <Button as="a" href="/work" variant="dark">View All Projects <Icons.ArrowRight /></Button>
+      <div data-reveal className="mt-14 text-center">
+        <Button as="a" href={sitePath('/work')} variant="dark">View All Projects <Icons.ArrowRight /></Button>
       </div>
     </Section>
   )
 }
 
 const WorkProjectCard = ({ project }) => (
-  <article data-motion-project-card data-motion-hover className="bg-white rounded-[2rem] p-4 pb-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+  <article className="bg-white rounded-[2rem] p-4 pb-6 shadow-sm transition duration-300 ease-out-quint hover:-translate-y-1 hover:shadow-md group flex flex-col">
     <div className="w-full aspect-[4/3] rounded-[1.5rem] overflow-hidden mb-6 bg-gray-100">
       <img src={project.image} alt={project.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
     </div>
@@ -513,7 +527,7 @@ const WorkProjectCard = ({ project }) => (
       <div className="flex flex-wrap gap-2 mt-5">
         {project.technology.slice(0, 6).map((technology) => <span key={technology} className="bg-gray-50 text-gray-500 text-xs font-medium px-3 py-1 rounded-full border border-gray-100">{technology}</span>)}
       </div>
-      {project.slug ? <a href={`/work/${project.slug}`} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#a36a0b]">View Project <Icons.ArrowRight /></a> : <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-gray-400">Project details coming soon</span>}
+      {project.slug ? <a href={sitePath(`/work/${project.slug}`)} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#a36a0b]">View Project <Icons.ArrowRight /></a> : <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-gray-400">Project details coming soon</span>}
       {project.github && <a href={project.github} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-[#1a1a1a]"><Icons.Github /> GitHub Repository</a>}
     </div>
   </article>
@@ -522,10 +536,10 @@ const WorkProjectCard = ({ project }) => (
 const ProjectCaseStudy = ({ project }) => (
   <>
     <Section className="pt-20 pb-14">
-      <a href="/work" className="inline-flex items-center gap-2 text-sm font-semibold text-[#a36a0b]"><Icons.ArrowRight /> Back to Work</a>
-      <div className="mt-10 max-w-4xl">
-        <span className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">{project.category}</span>
-        <h1 className="mt-5 text-5xl md:text-7xl leading-none">{project.title}</h1>
+      <a href={sitePath('/work')} className="inline-flex items-center gap-2 text-sm font-semibold text-[#a36a0b]"><Icons.ArrowRight /> Back to Work</a>
+      <div data-reveal-group className="mt-10 max-w-4xl">
+        <span className="font-eyebrow block text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">{project.category}</span>
+        <h1 className="mt-5 text-display">{project.title}</h1>
         <p className="mt-8 text-xl leading-relaxed text-[#4d4a46]">{project.description}</p>
         <div className="mt-7 flex flex-wrap gap-3">
           <span className="rounded-full bg-[#1a1a1a] px-4 py-2 text-sm font-semibold text-white">{project.status}</span>
@@ -534,11 +548,11 @@ const ProjectCaseStudy = ({ project }) => (
       </div>
     </Section>
     <Section className="pb-24">
-      <div className="overflow-hidden rounded-[2.5rem] bg-gray-100 aspect-[16/7]">
+      <div data-reveal className="overflow-hidden rounded-[2.5rem] bg-gray-100 aspect-[16/7]">
         <img src={project.image} alt={project.title} decoding="async" className="h-full w-full object-cover" />
       </div>
       <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 space-y-12">
+        <div data-reveal-group className="lg:col-span-2 space-y-12">
           {[
             ['Overview', project.caseStudy.overview],
             ['Problem', project.caseStudy.problem],
@@ -549,7 +563,7 @@ const ProjectCaseStudy = ({ project }) => (
             ['Outcome', project.caseStudy.outcome],
           ].map(([title, content]) => <section key={title}><h2 className="text-3xl">{title}</h2><p className="mt-4 text-lg leading-relaxed text-[#4d4a46]">{content}</p></section>)}
         </div>
-        <aside className="h-fit rounded-[2rem] bg-white p-7 shadow-sm border border-gray-100">
+        <aside data-reveal className="h-fit rounded-[2rem] bg-white p-7 shadow-sm border border-gray-100">
           <h2 className="text-2xl">Key Features</h2>
           <ul className="mt-5 space-y-3 text-sm text-[#4d4a46]">{project.highlights.map((highlight) => <li key={highlight} className="flex gap-3"><Icons.CheckCircle /> <span>{highlight}</span></li>)}</ul>
           <h2 className="mt-9 text-2xl">Technology</h2>
@@ -668,12 +682,12 @@ const WorkPage = () => {
   return (
     <>
       <Section className="pt-20 pb-10">
-        <div className="mx-auto mb-10 max-w-4xl text-center">
-          <span className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">WORK / PROJECTS</span>
-          <h1 className="mt-5 text-5xl md:text-7xl leading-none">AI, Apps, Platforms &amp; Automation <Accent>I&apos;ve Built.</Accent></h1>
+        <div data-reveal-group className="mx-auto mb-10 max-w-4xl text-center">
+          <span className="font-eyebrow block text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">WORK / PROJECTS</span>
+          <h1 className="mt-5 text-display">AI, Apps, Platforms &amp; Automation <Accent>I&apos;ve Built.</Accent></h1>
           <p className="mt-7 text-xl leading-relaxed text-[#4d4a46]">A collection of software products, AI systems, web applications, mobile apps, SaaS platforms, and automation workflows.</p>
         </div>
-        <div className="text-center"><Button as="a" href="#ai-ml" variant="primary">Explore My Work <Icons.ArrowRight /></Button></div>
+        <div data-reveal className="text-center"><Button as="a" href="#ai-ml" variant="primary">Explore My Work <Icons.ArrowRight /></Button></div>
       </Section>
       <Section className="pb-24">
         <div className="sticky top-20 z-20 -mx-4 mb-14 flex flex-wrap justify-center gap-3 bg-[#F5F4F0]/95 px-4 py-4 backdrop-blur md:mx-0 md:rounded-full">
@@ -683,14 +697,14 @@ const WorkPage = () => {
           <div className="relative w-full max-w-2xl"><div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400"><Icons.Search /></div><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search projects, skills, or technologies..." className="w-full rounded-full bg-white py-4 pl-12 pr-5 text-sm outline-none shadow-sm border border-transparent focus:border-gray-200" /></div>
         </div>
         <div className="space-y-20">
-          {visibleSections.map((section) => <section id={section.id} key={section.id} className="scroll-mt-36 border-t border-[#e7e3dc] pt-14">
-            <div className="mb-8"><span className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">{section.eyebrow}</span><h2 className="mt-3 text-4xl md:text-5xl">{section.title}</h2><p className="mt-3 max-w-3xl text-lg leading-relaxed text-[#4d4a46]">{section.description}</p></div>
-            {section.workflow && <div className="glass-dark mb-8 grid grid-cols-2 gap-3 rounded-[2rem] p-6 text-center text-white md:grid-cols-6"><span>Trigger</span><span>→ n8n</span><span>→ Process Data</span><span>→ AI / LLM</span><span>→ Decision</span><span>→ Action</span></div>}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">{section.projects.map((project) => <WorkProjectCard key={`${section.id}-${project.id}`} project={project} />)}</div>
+          {visibleSections.map((section) => <section id={section.id} key={section.id} className="scroll-mt-20 border-t border-[#e7e3dc] pt-14">
+            <div data-reveal-group className="mb-8"><span className="font-eyebrow block text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">{section.eyebrow}</span><h2 className="mt-3 text-4xl md:text-5xl">{section.title}</h2><p className="mt-3 max-w-3xl text-lg leading-relaxed text-[#4d4a46]">{section.description}</p></div>
+            {section.workflow && <div data-reveal className="glass-dark mb-8 grid grid-cols-2 gap-3 rounded-[2rem] p-6 text-center text-white md:grid-cols-6"><span>Trigger</span><span>→ n8n</span><span>→ Process Data</span><span>→ AI / LLM</span><span>→ Decision</span><span>→ Action</span></div>}
+            <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">{section.projects.map((project) => <WorkProjectCard key={`${section.id}-${project.id}`} project={project} />)}</div>
           </section>)}
         </div>
         {visibleSections.every((section) => section.projects.length === 0) && <p className="py-16 text-center text-[#4d4a46]">No projects match this search.</p>}
-        <div className="mt-20 rounded-[3rem] bg-[#F2B56B] p-10 text-center md:p-16"><h2 className="text-4xl md:text-5xl">Have Something You Want to <Accent plain>Build?</Accent></h2><p className="mx-auto mt-5 max-w-2xl text-lg text-[#5d4529]">From AI systems to complete digital products, let&apos;s build it.</p><div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"><Button as="a" href="/#contact" variant="dark">Start a Project <Icons.ArrowRight /></Button><Button as="a" href="/services" variant="secondary">View Services <Icons.ArrowRight /></Button></div></div>
+        <div data-reveal className="mt-20 rounded-[3rem] bg-[#F2B56B] p-10 text-center md:p-16"><h2 className="text-4xl md:text-5xl">Have Something You Want to <Accent plain>Build?</Accent></h2><p className="mx-auto mt-5 max-w-2xl text-lg text-[#5d4529]">From AI systems to complete digital products, let&apos;s build it.</p><div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row"><Button as="a" href={sitePath('/#contact')} variant="dark">Start a Project <Icons.ArrowRight /></Button><Button as="a" href={sitePath('/services')} variant="secondary">View Services <Icons.ArrowRight /></Button></div></div>
       </Section>
     </>
   )
@@ -744,10 +758,10 @@ const TeamPage = () => {
           title="People I collaborate with" accent="collaborate"
           description="Great products are built through collaboration. I work with specialists across AI, software engineering, design, mobile development, automation, and product development when the project requires it."
         />
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <div data-reveal className="flex flex-wrap justify-center gap-3 mb-12">
           {filters.map((item) => <Pill key={item} active={filter === item} onClick={() => setFilter(item)}>{item}</Pill>)}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {visibleTeam.map((member) => <TeamMemberCard key={member.id} member={member} />)}
         </div>
       </Section>
@@ -755,20 +769,20 @@ const TeamPage = () => {
       <Section className="py-16">
         <div className="rounded-[3rem] bg-[#EBE7DF] p-10 md:p-14">
           <SectionHeader subtitle="COLLABORATIVE EXPERTISE" title="Multiple disciplines. One product mindset." accent="product mindset." description="The people I collaborate with bring capabilities across product definition, intelligent systems, software delivery, and ongoing improvement." />
-          <div className="flex flex-wrap justify-center gap-3">
+          <div data-reveal className="flex flex-wrap justify-center gap-3">
             {['AI & Machine Learning', 'Computer Vision', 'Generative AI', 'LLM Engineering', 'AI Agents', 'Web Development', 'Mobile Development', 'Backend Engineering', 'UI/UX Design', 'Cloud & DevOps', 'Automation', 'QA & Testing', 'SaaS Development', 'Product Development'].map((item) => <span key={item} className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm">{item}</span>)}
           </div>
         </div>
       </Section>
 
       <Section className="pb-24">
-        <div className="glass-dark rounded-[3rem] p-10 md:p-16 text-center text-white">
+        <div data-reveal className="glass-dark rounded-[3rem] p-10 md:p-16 text-center text-white">
           <p className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-gray-400">COLLABORATE WITH US</p>
           <h2 className="mt-4 text-4xl md:text-6xl">Have a <Accent dark>Bigger Idea?</Accent></h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-400">Bring us your idea. We’ll combine the right skills and turn it into a product.</p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <Button as="a" href="/#contact" variant="primary">Start a Project</Button>
-            <Button as="a" href="/#services" variant="outline-dark">View Services</Button>
+            <Button as="a" href={sitePath('/#contact')} variant="primary">Start a Project</Button>
+            <Button as="a" href={sitePath('/#services')} variant="outline-dark">View Services</Button>
           </div>
         </div>
       </Section>
@@ -779,9 +793,9 @@ const TeamPage = () => {
 const AboutPage = () => (
   <div className="font-body">
     <Section id="about-page" className="pt-20 pb-16 md:pt-28">
-      <div className="max-w-3xl">
+      <div data-reveal-group className="max-w-4xl">
         <Eyebrow>About me</Eyebrow>
-        <h1 className="font-display mt-5 text-5xl leading-[1.02] tracking-[-0.015em] text-[#1a1a1a] sm:text-6xl md:text-7xl">Building Intelligent Systems.<br className="hidden sm:block" /> Turning Ideas Into <Accent>Products.</Accent></h1>
+        <h1 className="font-display mt-5 text-display text-[#1a1a1a]">Building Intelligent Systems.<br className="hidden sm:block" /> Turning Ideas Into <Accent>Products.</Accent></h1>
         <div className="mt-8 max-w-2xl space-y-6 text-lg leading-[1.7] text-[#4d4a46]">
           <p>I’m <span className="font-medium text-[#1a1a1a]">Hamza Shahzad</span>, an Artificial Intelligence Engineer and software builder focused on creating intelligent systems and modern digital products.</p>
           <p>I work across <span className="text-[#1a1a1a]">Artificial Intelligence, Machine Learning, Computer Vision, Generative AI, LLM applications, AI agents, backend engineering, and application development</span>.</p>
@@ -798,7 +812,7 @@ const AboutPage = () => (
     <div className="bg-[#EBE7DF]/40">
       <Section className="py-20">
         <SectionHeader subtitle="My journey" title="From Learning AI to Building Real Systems" accent="Real Systems" description="My journey started with a strong interest in programming and Artificial Intelligence. During my BS in Artificial Intelligence, I explored machine learning, deep learning, computer vision, natural language processing, and software development." />
-        <div className="mx-auto max-w-4xl rounded-[2rem] bg-white p-8 md:p-12 shadow-sm">
+        <div data-reveal className="mx-auto max-w-4xl rounded-[2rem] bg-white p-8 md:p-12 shadow-sm">
           <p className="text-lg leading-[1.7] text-[#4d4a46]">Over time, my focus moved beyond learning individual technologies. I started building complete applications where AI becomes part of a larger product.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm font-medium text-[#1a1a1a]">
             {['Idea', 'Architecture', 'Development', 'AI Integration', 'Testing', 'Product'].map((item, index) => <React.Fragment key={item}><span className="rounded-full bg-[#FDF5EB] px-4 py-2">{item}</span>{index < 5 && <span className="text-[#F2B56B]">→</span>}</React.Fragment>)}
@@ -810,7 +824,7 @@ const AboutPage = () => (
 
     <Section className="py-20">
       <SectionHeader subtitle="What I do" title="AI, LLMs, and the software around them" accent="software" description="I build the intelligent capabilities and reliable software infrastructure needed to turn ideas into useful products." />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div data-reveal-group className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {[
           ['Artificial Intelligence', 'I build intelligent systems using machine learning, deep learning, computer vision, NLP, and generative AI.', ['Machine Learning', 'Deep Learning', 'Computer Vision', 'NLP', 'Generative AI', 'LLM Applications', 'AI Agents']],
           ['LLM Engineering', 'I develop applications around modern language models and retrieval systems.', ['LLM Applications', 'RAG', 'LangChain', 'LangGraph', 'Embeddings', 'Vector Search', 'AI Agents', 'Knowledge Systems']],
@@ -827,7 +841,7 @@ const AboutPage = () => (
 
     <div className="glass-dark text-white">
       <Section className="py-20">
-        <div className="mx-auto max-w-4xl">
+        <div data-reveal-group className="mx-auto max-w-4xl">
           <Eyebrow dark>How I think about engineering</Eyebrow>
           <h2 className="font-display mt-5 text-[2.75rem] leading-[1.05] tracking-[-0.01em] md:text-6xl">AI Is Only Valuable When It Solves a <Accent dark>Real Problem.</Accent></h2>
           <p className="mt-8 text-lg leading-[1.7] text-gray-400">I don’t approach every problem by asking, “Where can we use AI?” I start with, “What problem are we actually trying to solve?” From there, I determine whether AI is appropriate and what type of system makes sense.</p>
@@ -839,7 +853,7 @@ const AboutPage = () => (
 
     <Section className="py-20">
       <SectionHeader subtitle="My engineering approach" title="Understand. Design. Build. Test. Iterate. Deliver." accent="Deliver." description="A practical process for creating maintainable products that can continue evolving." />
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
           ['Understand', 'Understand the problem, users, requirements, and constraints.'],
           ['Design', 'Plan the architecture, data flow, AI components, APIs, and user experience.'],
@@ -854,7 +868,7 @@ const AboutPage = () => (
     <div className="bg-[#EBE7DF]/40">
       <Section className="py-20">
         <SectionHeader subtitle="Experience & education" title="Grounded in engineering practice" accent="practice" description="Professional experience and academic foundations supporting my work across AI and software systems." />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="rounded-[2rem] bg-white p-8 shadow-sm"><Eyebrow>10Pearls · Islamabad</Eyebrow><h3 className="font-display mt-4 text-3xl leading-tight">AI / Software Engineering Intern</h3><p className="mt-4 leading-relaxed text-[#4d4a46]">I’m gaining professional experience working in a real-world technology environment, strengthening my software engineering practices, collaboration, development workflows, and practical AI engineering skills.</p></div>
           <div className="rounded-[2rem] bg-white p-8 shadow-sm"><Eyebrow>The Islamia University of Bahawalpur</Eyebrow><h3 className="font-display mt-4 text-3xl leading-tight">BS Artificial Intelligence</h3><p className="mt-2 text-sm font-medium text-gray-500">4-Year Bachelor’s Degree · 2022–2026</p><p className="mt-4 leading-relaxed text-[#4d4a46]">Academic foundations across Artificial Intelligence, Machine Learning, Deep Learning, Computer Vision, NLP, programming, algorithms, data, and intelligent systems.</p></div>
         </div>
@@ -863,7 +877,7 @@ const AboutPage = () => (
 
     <Section className="py-20">
       <SectionHeader subtitle="Technologies I work with" title="An interactive toolkit, not a percentage chart" accent="toolkit" description="The tools I use across AI systems, LLM engineering, application development, data, and infrastructure." />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           ['AI / ML', ['Python', 'PyTorch', 'TensorFlow', 'Scikit-learn', 'Hugging Face', 'YOLO']],
           ['LLM / GenAI', ['LangChain', 'LangGraph', 'RAG', 'Vector Databases', 'Embeddings', 'AI Agents']],
@@ -880,21 +894,21 @@ const AboutPage = () => (
 
     <Section className="pb-20">
       <SectionHeader subtitle="What I build" title="Products across the stack" accent="the stack" description="My work spans multiple types of digital products." />
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">{[['AI Systems', 'Intelligent applications powered by ML, computer vision, NLP, and generative AI.'], ['SaaS Products', 'Cloud-based platforms designed around real business workflows.'], ['Web Applications', 'Modern, responsive applications with strong backend architecture.'], ['Mobile Applications', 'Cross-platform applications for Android and iOS.'], ['AI Automation', 'Intelligent workflows that reduce repetitive tasks and connect business processes.']].map(([title, description]) => <div key={title} className="rounded-[1.5rem] border border-gray-100 bg-white p-6 shadow-sm"><h3 className="font-display text-2xl leading-tight">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
+      <div data-reveal-group className="grid grid-cols-1 md:grid-cols-5 gap-4">{[['AI Systems', 'Intelligent applications powered by ML, computer vision, NLP, and generative AI.'], ['SaaS Products', 'Cloud-based platforms designed around real business workflows.'], ['Web Applications', 'Modern, responsive applications with strong backend architecture.'], ['Mobile Applications', 'Cross-platform applications for Android and iOS.'], ['AI Automation', 'Intelligent workflows that reduce repetitive tasks and connect business processes.']].map(([title, description]) => <div key={title} className="rounded-[1.5rem] border border-gray-100 bg-white p-6 shadow-sm"><h3 className="font-display text-2xl leading-tight">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
     </Section>
 
     <div className="glass-dark text-white">
       <Section className="py-20">
-        <div className="mx-auto max-w-4xl text-center"><Eyebrow dark>Current direction</Eyebrow><h2 className="font-display mt-5 text-[2.75rem] leading-[1.05] tracking-[-0.01em] md:text-6xl">Becoming a Stronger <Accent dark>AI Engineer</Accent></h2><p className="mt-6 text-lg leading-[1.7] text-gray-400">My current professional direction is focused on production AI systems, Computer Vision, LLM engineering, AI agents, RAG architectures, backend systems, scalable applications, and AI-powered products.</p><p className="mt-6 text-xl font-medium text-white">The goal is to bridge the gap between <span className="text-[#F2B56B]">AI research, engineering, and real-world products</span>.</p></div>
+        <div data-reveal-group className="mx-auto max-w-4xl text-center"><Eyebrow dark>Current direction</Eyebrow><h2 className="font-display mt-5 text-[2.75rem] leading-[1.05] tracking-[-0.01em] md:text-6xl">Becoming a Stronger <Accent dark>AI Engineer</Accent></h2><p className="mt-6 text-lg leading-[1.7] text-gray-400">My current professional direction is focused on production AI systems, Computer Vision, LLM engineering, AI agents, RAG architectures, backend systems, scalable applications, and AI-powered products.</p><p className="mt-6 text-xl font-medium text-white">The goal is to bridge the gap between <span className="text-[#F2B56B]">AI research, engineering, and real-world products</span>.</p></div>
       </Section>
     </div>
 
     <Section className="py-20">
-      <div className="mx-auto max-w-3xl text-center"><span className="font-display block text-7xl leading-none text-[#F2B56B]">“</span><h2 className="font-display text-5xl leading-[1.05] tracking-[-0.01em] md:text-6xl">Build. Learn. Improve. <Accent>Repeat.</Accent></h2><p className="mt-6 text-lg leading-[1.7] text-[#4d4a46]">Every project is an opportunity to understand something better. I believe progress comes from consistently building, testing ideas, learning from failures, and improving the next version.</p></div>
+      <div data-reveal-group className="mx-auto max-w-3xl text-center"><span className="font-display block text-7xl leading-none text-[#F2B56B]">“</span><h2 className="font-display text-5xl leading-[1.05] tracking-[-0.01em] md:text-6xl">Build. Learn. Improve. <Accent>Repeat.</Accent></h2><p className="mt-6 text-lg leading-[1.7] text-[#4d4a46]">Every project is an opportunity to understand something better. I believe progress comes from consistently building, testing ideas, learning from failures, and improving the next version.</p></div>
     </Section>
 
     <Section className="pb-24">
-      <div className="rounded-[3rem] bg-[#F2B56B] p-10 md:p-16 text-center"><h2 className="font-display text-5xl leading-[1.05] tracking-[-0.01em] md:text-7xl">Have an <Accent plain>Idea?</Accent></h2><p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#5d4529]">Let’s turn an idea into something real—an AI system, SaaS platform, web application, mobile app, or intelligent automation workflow.</p><div className="mt-8 flex flex-col sm:flex-row justify-center gap-4"><Button as="a" href="/#work" variant="dark">View My Work <Icons.ArrowRight /></Button><Button as="a" href="/#contact" variant="secondary">Let’s Talk</Button></div></div>
+      <div data-reveal className="rounded-[3rem] bg-[#F2B56B] p-10 md:p-16 text-center"><h2 className="font-display text-display">Have an <Accent plain>Idea?</Accent></h2><p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#5d4529]">Let’s turn an idea into something real—an AI system, SaaS platform, web application, mobile app, or intelligent automation workflow.</p><div className="mt-8 flex flex-col sm:flex-row justify-center gap-4"><Button as="a" href={sitePath('/#work')} variant="dark">View My Work <Icons.ArrowRight /></Button><Button as="a" href={sitePath('/#contact')} variant="secondary">Let’s Talk</Button></div></div>
     </Section>
   </div>
 )
@@ -957,14 +971,14 @@ const ServicesPage = () => {
   return (
     <>
       <Section id="services-page" className="pt-20 pb-24">
-        <div className="max-w-5xl">
-          <span className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">SERVICES</span>
-          <h1 className="mt-5 text-5xl md:text-7xl leading-none">What I <Accent>Build</Accent></h1>
+        <div data-reveal-group className="max-w-5xl">
+          <span className="font-eyebrow block text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36]">SERVICES</span>
+          <h1 className="mt-5 text-display">What I <Accent>Build</Accent></h1>
           <h2 className="mt-7 text-3xl md:text-5xl leading-tight">AI, Software & Digital Products Built Around Real Business Problems.</h2>
           <p className="mt-7 max-w-3xl text-xl leading-relaxed text-[#4d4a46]">I help turn ideas, workflows, and business requirements into modern digital products—from AI-powered systems and SaaS platforms to web applications, mobile apps, and intelligent automation.</p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
-            <Button as="a" href="/#contact" variant="primary">Start a Project <Icons.ArrowRight /></Button>
-            <Button as="a" href="/#work" variant="outline">View My Work</Button>
+            <Button as="a" href={sitePath('/#contact')} variant="primary">Start a Project <Icons.ArrowRight /></Button>
+            <Button as="a" href={sitePath('/#work')} variant="outline">View My Work</Button>
           </div>
         </div>
       </Section>
@@ -972,20 +986,20 @@ const ServicesPage = () => {
       <div className="bg-[#EBE7DF]/40">
         <Section className="py-20">
           <SectionHeader subtitle="SERVICES OVERVIEW" title="From Idea to Working Product" accent="Working Product" description="I provide development across AI, software engineering, application development, and automation." />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {serviceGroups.map((service, index) => <div key={service.title} className="rounded-[2rem] bg-white p-8 shadow-sm"><span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span><h3 className="mt-5 text-3xl">{service.title}</h3><p className="mt-4 leading-relaxed text-[#4d4a46]">{service.description}</p><Button as="a" href="/#contact" variant="ghost" size="small" className="mt-6">{service.cta} <Icons.ArrowRight /></Button></div>)}
+          <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {serviceGroups.map((service, index) => <div key={service.title} className="rounded-[2rem] bg-white p-8 shadow-sm"><span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span><h3 className="mt-5 text-3xl">{service.title}</h3><p className="mt-4 leading-relaxed text-[#4d4a46]">{service.description}</p><Button as="a" href={sitePath('/#contact')} variant="ghost" size="small" className="mt-6">{service.cta} <Icons.ArrowRight /></Button></div>)}
           </div>
         </Section>
       </div>
 
       <Section className="py-24">
         <SectionHeader subtitle="DETAILED CAPABILITIES" title="Technology matched to the problem" accent="the problem" description="Each engagement can be scoped around the capabilities and technologies that make sense for the product." />
-        <div className="space-y-8">
+        <div data-reveal-group className="space-y-8">
           {serviceGroups.map((service, index) => (
             <article key={service.title} className="rounded-[2.5rem] bg-white p-8 md:p-12 shadow-sm border border-gray-100">
               <div className="flex flex-col lg:flex-row lg:justify-between gap-8">
                 <div className="max-w-xl"><span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span><h3 className="mt-4 text-3xl md:text-4xl">{service.title}</h3><p className="mt-4 text-lg leading-relaxed text-[#4d4a46]">{service.description}</p></div>
-                <Button as="a" href="/#contact" variant="dark" size="secondary" className="self-start">{service.cta} <Icons.ArrowRight /></Button>
+                <Button as="a" href={sitePath('/#contact')} variant="dark" size="secondary" className="self-start">{service.cta} <Icons.ArrowRight /></Button>
               </div>
               <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div><h4 className="font-bold">Capabilities</h4><div className="mt-4 flex flex-wrap gap-2">{service.capabilities.map((item) => <span key={item} className="rounded-full bg-[#FDF5EB] px-3 py-1.5 text-sm text-[#a36a0b]">{item}</span>)}</div></div>
@@ -999,7 +1013,7 @@ const ServicesPage = () => {
       <div className="glass-dark text-white">
         <Section className="py-24">
           <SectionHeader subtitle="PRODUCT DEVELOPMENT" title="From Concept to Product" accent="Product" dark description="If you have an idea but don't know where to start, I can help translate the idea into a technical product plan." />
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {['Idea', 'Product Planning', 'Architecture', 'Development', 'Testing', 'Launch'].map((step, index) => <div key={step} className="rounded-[1.5rem] border border-white/10 p-6"><span className="font-eyebrow text-xs font-semibold text-[#F2B56B]">0{index + 1}</span><h3 className="mt-4 text-2xl">{step}</h3><p className="mt-3 text-sm leading-relaxed text-gray-400">{['Define the problem and target users.', 'Define features, priorities, and requirements.', 'Select the appropriate technologies and architecture.', 'Build the product and integrate required components.', 'Validate the product and improve reliability.', 'Prepare the system for deployment and continued development.'][index]}</p></div>)}
           </div>
         </Section>
@@ -1007,7 +1021,7 @@ const ServicesPage = () => {
 
       <Section className="py-24">
         <SectionHeader subtitle="WHY WORK WITH ME?" title="Engineering + Product Thinking" accent="Product Thinking" description="The focus is on building useful systems rather than adding complexity for its own sake." />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             ['AI First When It Makes Sense', 'I don’t add AI simply because it’s popular. I focus on whether it actually improves the product.'],
             ['Full Product Perspective', 'I can work across AI, backend, frontend, mobile, APIs, databases, and automation.'],
@@ -1020,24 +1034,24 @@ const ServicesPage = () => {
       <div className="bg-[#EBE7DF]/40">
         <Section className="py-24">
           <SectionHeader subtitle="WHO I WORK WITH" title="Built for different stages and ambitions" accent="ambitions" description="My services can support individuals, founders, startups, businesses, and organizations." />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">{[['Startups', 'Build and validate new digital products.'], ['Small & Medium Businesses', 'Improve existing workflows with software and automation.'], ['Founders', 'Turn product ideas into working MVPs.'], ['Organizations', 'Develop internal systems and intelligent business tools.'], ['Individuals', 'Build websites, applications, and custom software products.']].map(([title, description]) => <div key={title} className="rounded-[1.5rem] bg-white p-6 shadow-sm"><h3 className="text-2xl">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
+          <div data-reveal-group className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">{[['Startups', 'Build and validate new digital products.'], ['Small & Medium Businesses', 'Improve existing workflows with software and automation.'], ['Founders', 'Turn product ideas into working MVPs.'], ['Organizations', 'Develop internal systems and intelligent business tools.'], ['Individuals', 'Build websites, applications, and custom software products.']].map(([title, description]) => <div key={title} className="rounded-[1.5rem] bg-white p-6 shadow-sm"><h3 className="text-2xl">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
         </Section>
       </div>
 
       <Section className="py-24">
         <SectionHeader subtitle="HOW WE WORK" title="A clear path from requirements to delivery" accent="delivery" description="Every engagement is shaped around the product, the people using it, and the outcome it needs to create." />
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">{[['Discovery', 'Understand your idea, requirements, users, and goals.'], ['Scope', 'Define features, priorities, timeline, and technical requirements.'], ['Architecture', 'Design the technical structure and choose the appropriate stack.'], ['Build', 'Develop the product in structured stages.'], ['Review', 'Test, refine, and incorporate feedback.'], ['Deliver', 'Prepare the final product for deployment and future development.']].map(([title, description], index) => <div key={title} className="rounded-[1.5rem] bg-white p-6 shadow-sm"><span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span><h3 className="mt-4 text-2xl">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
+        <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">{[['Discovery', 'Understand your idea, requirements, users, and goals.'], ['Scope', 'Define features, priorities, timeline, and technical requirements.'], ['Architecture', 'Design the technical structure and choose the appropriate stack.'], ['Build', 'Develop the product in structured stages.'], ['Review', 'Test, refine, and incorporate feedback.'], ['Deliver', 'Prepare the final product for deployment and future development.']].map(([title, description], index) => <div key={title} className="rounded-[1.5rem] bg-white p-6 shadow-sm"><span className="font-eyebrow text-xs font-semibold text-[#a36a0b]">0{index + 1}</span><h3 className="mt-4 text-2xl">{title}</h3><p className="mt-3 text-sm leading-relaxed text-[#4d4a46]">{description}</p></div>)}</div>
       </Section>
 
       <div className="bg-[#EBE7DF]/40">
         <Section className="py-24">
           <SectionHeader subtitle="FAQ" title="Questions before we start" accent="we start" description="A few practical answers about working together." />
-          <div className="mx-auto max-w-4xl space-y-4">{faqs.map(([question, answer]) => <details key={question} className="group rounded-2xl bg-white p-6 shadow-sm"><summary className="cursor-pointer list-none pr-8 text-lg font-bold">{question}<span className="float-right text-[#F2B56B] group-open:rotate-45 transition-transform">+</span></summary><p className="mt-4 max-w-3xl leading-relaxed text-[#4d4a46]">{answer}</p></details>)}</div>
+          <div data-reveal-group className="mx-auto max-w-4xl space-y-4">{faqs.map(([question, answer]) => <details key={question} className="group rounded-2xl bg-white p-6 shadow-sm"><summary className="cursor-pointer list-none pr-8 text-lg font-bold">{question}<span className="float-right text-[#F2B56B] group-open:rotate-45 transition-transform">+</span></summary><p className="mt-4 max-w-3xl leading-relaxed text-[#4d4a46]">{answer}</p></details>)}</div>
         </Section>
       </div>
 
       <Section className="py-24">
-        <div className="rounded-[3rem] bg-[#F2B56B] p-10 md:p-16 text-center"><h2 className="text-4xl md:text-6xl">Have a <Accent plain>Product</Accent> in Mind?</h2><p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#5d4529]">Let’s turn your idea into a working digital product.</p><div className="mt-8 flex flex-col sm:flex-row justify-center gap-4"><Button as="a" href="/#contact" variant="dark">Start a Project <Icons.ArrowRight /></Button><Button as="a" href="/#work" variant="secondary">View My Work</Button></div></div>
+        <div data-reveal className="rounded-[3rem] bg-[#F2B56B] p-10 md:p-16 text-center"><h2 className="text-title">Have a <Accent plain>Product</Accent> in Mind?</h2><p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#5d4529]">Let’s turn your idea into a working digital product.</p><div className="mt-8 flex flex-col sm:flex-row justify-center gap-4"><Button as="a" href={sitePath('/#contact')} variant="dark">Start a Project <Icons.ArrowRight /></Button><Button as="a" href={sitePath('/#work')} variant="secondary">View My Work</Button></div></div>
       </Section>
     </>
   )
@@ -1051,7 +1065,7 @@ const ServicesAndSkills = () => (
         title="AI engineering and product development" accent="product development"
         description="From intelligent systems and automation to web applications, mobile products, APIs, and backend infrastructure, I build complete products around AI."
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div data-reveal-group className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {PORTFOLIO_DATA.services.map((service, idx) => (
           <div key={idx} className="bg-white rounded-[2rem] p-10 shadow-sm flex flex-col h-full">
             <div className="w-12 h-12 rounded-full bg-[#FDF5EB] flex items-center justify-center mb-6">{service.icon}</div>
@@ -1062,19 +1076,19 @@ const ServicesAndSkills = () => (
                 <span key={tIdx} className="bg-gray-50 text-gray-500 text-xs font-medium px-4 py-1.5 rounded-full border border-gray-100">{tag}</span>
               ))}
             </div>
-            <Button as="a" href="/#contact" variant="ghost" size="small" className="mt-auto">
+            <Button as="a" href={sitePath('/#contact')} variant="ghost" size="small" className="mt-auto">
               Learn more <Icons.ArrowRight />
             </Button>
           </div>
         ))}
       </div>
-      <div className="glass-dark mt-8 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div data-reveal className="glass-dark mt-8 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="min-w-0">
           <p className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-gray-400">COLLABORATION</p>
           <h3 className="mt-2 text-3xl leading-tight">Need More Than One Specialist?</h3>
           <p className="text-gray-400 mt-3 max-w-2xl">Some products require multiple disciplines. When a project needs broader expertise, I collaborate with my team across AI, software engineering, design, mobile development, automation, and product development.</p>
         </div>
-        <Button as="a" href="/#contact" variant="primary" size="secondary" className="w-full md:w-auto shrink-0">Discuss Your Project</Button>
+        <Button as="a" href={sitePath('/#contact')} variant="primary" size="secondary" className="w-full md:w-auto shrink-0">Discuss Your Project</Button>
       </div>
     </Section>
 
@@ -1085,7 +1099,7 @@ const ServicesAndSkills = () => (
         description="The technologies I use across AI systems, computer vision, LLM applications, backend services, full-stack products, mobile apps, SaaS, automation, and infrastructure."
       />
 
-      <div className="skills-marquee space-y-3" aria-label="Technology stack">
+      <div data-reveal-group className="skills-marquee space-y-3" aria-label="Technology stack">
         {[
           ['left', ['Python', 'PyTorch', 'TensorFlow', 'Scikit-learn', 'OpenCV', 'YOLO', 'NLP', 'Computer Vision', 'Generative AI', 'Hugging Face', 'LangChain', 'LangGraph', 'LlamaIndex', 'RAG', 'AI Agents', 'Ollama', 'FAISS', 'Qdrant']],
           ['right', ['FastAPI', 'Django', 'Flask', 'React', 'Next.js', 'JavaScript', 'TypeScript', 'HTML', 'CSS', 'Tailwind CSS', 'Flutter', 'Dart', 'Android', 'iOS', 'REST APIs', 'WebSockets', 'PostgreSQL', 'MongoDB', 'MySQL', 'Redis']],
@@ -1114,7 +1128,7 @@ const Workflow = () => (
       title="How I design and build" accent="build"
       description="A clear, repeatable process: discover → design → build → refine—delivering clean UI, smooth interactions, and fast, responsive results."
     />
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    <div data-reveal-group className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
       {PORTFOLIO_DATA.workflow.map((item, idx) => (
         <div key={idx} className="bg-white rounded-[2rem] p-8 shadow-sm flex flex-col items-start relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
           <div className="w-10 h-10 rounded-full bg-[#F2B56B] text-[#1a1a1a] flex items-center justify-center font-bold mb-6 text-lg">{item.step}</div>
@@ -1133,11 +1147,11 @@ const HomeTeam = () => (
         subtitle="COLLABORATORS"
         title="Built through collaboration." accent="collaboration."
         description="I lead the technical direction and collaborate with developers, AI engineers, designers, and technology specialists when a project needs broader expertise."
-        rightAction={<Button as="a" href="/team" variant="dark" size="secondary">Meet the collaborators <Icons.ArrowRight /></Button>}
+        rightAction={<Button as="a" href={sitePath('/team')} variant="dark" size="secondary">Meet the collaborators <Icons.ArrowRight /></Button>}
       />
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+      <div data-reveal-group className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
         {team.filter((member) => member.featured && member.image).map((member) => (
-          <a key={member.id} href="/team" className="group block rounded-[2rem] border border-white/70 bg-white/60 p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" aria-label={`View ${member.name} on the team page`}>
+          <a key={member.id} href={sitePath('/team')} className="group block rounded-[2rem] border border-white/70 bg-white/60 p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" aria-label={`View ${member.name} on the team page`}>
             <div className="mx-auto aspect-square w-full max-w-40 overflow-hidden rounded-full border-4 border-white bg-[#EBE7DF] shadow-md">
               <img src={member.image} alt={member.name} className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
             </div>
@@ -1235,14 +1249,14 @@ const _AboutAndExperience = () => (
 
 const Web3Section = () => (
   <Section id="web3" className="py-24">
-    <div className="bg-[#EBE7DF] rounded-[3rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10">
+    <div data-reveal className="bg-[#EBE7DF] rounded-[3rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10">
       <div className="max-w-xl">
         <div className="w-12 h-12 rounded-full flex items-center justify-center mb-6 text-[#F2B56B]"><Icons.Blocks /></div>
         <span className="font-eyebrow text-xs md:text-[13px] font-semibold uppercase tracking-[0.12em] text-[#3f3a36] mb-4 block">WEB3</span>
         <h2 className="text-3xl md:text-5xl text-[#1a1a1a] mb-6 leading-tight">Learning the future, <Accent>one block at a time</Accent></h2>
         <p className="text-[#4d4a46] text-lg leading-relaxed">Blockchain technology is where I see the future heading. I’m still learning — smart contracts, wallets, and the ideas behind decentralization — while contributing content and artwork to web3 communities like Dlicom.</p>
       </div>
-      <Button as="a" href="/about" variant="dark" className="shadow-lg">
+      <Button as="a" href={sitePath('/about')} variant="dark" className="shadow-lg">
         Read about my work <Icons.ArrowUpRight />
       </Button>
     </div>
@@ -1277,9 +1291,9 @@ const Contact = () => {
 
   return (
     <Section id="contact" className="py-24">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <div data-reveal-group className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         <div className="flex flex-col">
-          <h2 className="text-4xl text-[#1a1a1a] mb-10">Have an idea? Let’s <Accent>build it.</Accent></h2>
+          <h2 className="text-title text-[#1a1a1a] mb-10">Have an idea? Let’s <Accent>build it.</Accent></h2>
 
           <div className="space-y-8 mb-12">
             <div className="flex items-start gap-4">
@@ -1350,8 +1364,8 @@ const Contact = () => {
 
 const PreFooterCTA = () => (
   <div className="glass-dark py-24 md:py-32 px-4 text-center">
-    <div className="max-w-4xl mx-auto flex flex-col items-center">
-      <h2 className="text-4xl md:text-6xl text-white mb-6">Build your next <Accent dark>modern</Accent> experience</h2>
+    <div data-reveal-group className="max-w-4xl mx-auto flex flex-col items-center">
+      <h2 className="text-title text-white mb-6">Build your next <Accent dark>modern</Accent> experience</h2>
       <p className="text-gray-400 text-lg md:text-xl max-w-2xl mb-12 leading-relaxed">I’m Hamza Shahzad, an Artificial Intelligence Engineer building intelligent systems, software products, and modern digital experiences.</p>
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
         <Button as="a" href="#contact" variant="primary" className="w-full shadow-sm sm:w-auto">
@@ -1384,12 +1398,12 @@ const Footer = () => (
         <div className="md:col-span-3 md:col-start-7 flex flex-col">
           <h4 className="font-bold text-[#1a1a1a] mb-6">Navigation</h4>
           <ul className="space-y-4 text-gray-500 text-sm">
-            <li><a href="/" className="hover:text-[#F2B56B] transition">Home</a></li>
-            <li><a href="/work" className="hover:text-[#F2B56B] transition">Projects</a></li>
-            <li><a href="/about" className="hover:text-[#F2B56B] transition">About</a></li>
-            <li><a href="/services" className="hover:text-[#F2B56B] transition">Services</a></li>
-            <li><a href="/team" className="hover:text-[#F2B56B] transition">Team</a></li>
-            <li><a href="/#contact" className="hover:text-[#F2B56B] transition">Contact</a></li>
+            <li><a href={sitePath('/')} className="hover:text-[#F2B56B] transition">Home</a></li>
+            <li><a href={sitePath('/work')} className="hover:text-[#F2B56B] transition">Projects</a></li>
+            <li><a href={sitePath('/about')} className="hover:text-[#F2B56B] transition">About</a></li>
+            <li><a href={sitePath('/services')} className="hover:text-[#F2B56B] transition">Services</a></li>
+            <li><a href={sitePath('/team')} className="hover:text-[#F2B56B] transition">Team</a></li>
+            <li><a href={sitePath('/#contact')} className="hover:text-[#F2B56B] transition">Contact</a></li>
           </ul>
         </div>
 
@@ -1442,9 +1456,9 @@ const routeMetadata = {
 }
 
 export default function App() {
-  const [backgroundOffset, setBackgroundOffset] = useState({ x: 0, y: 0 })
   const appRef = useRef(null)
-  const currentPath = window.location.pathname
+  const backgroundRef = useRef(null)
+  const currentPath = currentRoute()
   const isTeamPage = currentPath === '/team'
   const isAboutPage = currentPath === '/about'
   const isServicesPage = currentPath === '/services'
@@ -1490,20 +1504,29 @@ export default function App() {
     canonical.setAttribute('href', canonicalUrl)
   }, [currentPath])
 
+  // Background parallax. Tweens the layer directly so moving the mouse doesn't re-render the page.
   useEffect(() => {
-    const handleBackgroundMove = (event) => {
-      const x = (event.clientX / window.innerWidth - 0.5) * 24
-      const y = (event.clientY / window.innerHeight - 0.5) * 24
-      setBackgroundOffset({ x, y })
-    }
+    const layer = backgroundRef.current
+    if (!layer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
 
-    const resetBackground = () => setBackgroundOffset({ x: 0, y: 0 })
+    const moveX = gsap.quickTo(layer, 'x', { duration: 0.8, ease: 'power3.out' })
+    const moveY = gsap.quickTo(layer, 'y', { duration: 0.8, ease: 'power3.out' })
+    const handleBackgroundMove = (event) => {
+      moveX((event.clientX / window.innerWidth - 0.5) * 24)
+      moveY((event.clientY / window.innerHeight - 0.5) * 24)
+    }
+    const resetBackground = () => {
+      moveX(0)
+      moveY(0)
+    }
     window.addEventListener('mousemove', handleBackgroundMove)
-    window.addEventListener('mouseleave', resetBackground)
+    document.documentElement.addEventListener('mouseleave', resetBackground)
 
     return () => {
       window.removeEventListener('mousemove', handleBackgroundMove)
-      window.removeEventListener('mouseleave', resetBackground)
+      document.documentElement.removeEventListener('mouseleave', resetBackground)
+      gsap.killTweensOf(layer)
+      gsap.set(layer, { clearProps: 'transform' })
     }
   }, [])
 
@@ -1511,24 +1534,27 @@ export default function App() {
     const root = appRef.current
     if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
 
-    const hoverCleanups = []
-    const context = gsap.context(() => {
-      const heroHeadline = '[data-motion-hero="headline"]'
-      const heroSubheadline = '[data-motion-hero="subheadline"]'
-      const heroVisual = '[data-motion-hero="visual"]'
+    // Scroll reveals: every [data-reveal] element and every child of a [data-reveal-group].
+    // Inline `transition: none` keeps an element's own CSS transitions from lagging the tween; it's cleared afterwards.
+    const revealTargets = gsap.utils.toArray('[data-reveal], [data-reveal-group] > *', root)
 
-      if (root.querySelector(heroHeadline) && root.querySelector(heroSubheadline)) {
-        gsap.fromTo([heroHeadline, heroSubheadline], { autoAlpha: 0, y: 50 }, {
+    const context = gsap.context(() => {
+      const heroIntro = gsap.utils.toArray('[data-motion-hero]:not([data-motion-hero="visual"])')
+      const heroVisual = root.querySelector('[data-motion-hero="visual"]')
+
+      if (heroIntro.length) {
+        gsap.fromTo(heroIntro, { autoAlpha: 0, y: 32 }, {
           autoAlpha: 1,
           y: 0,
           duration: 0.9,
           ease: 'power3.out',
-          stagger: 0.14,
+          stagger: 0.09,
           clearProps: 'transform,opacity,visibility',
         })
       }
 
-      if (root.querySelector(heroVisual)) {
+      if (heroVisual) {
+        gsap.fromTo(heroVisual, { autoAlpha: 0, scale: 0.96 }, { autoAlpha: 1, scale: 1, duration: 1.1, delay: 0.2, ease: 'power3.out' })
         gsap.to(heroVisual, {
           y: -12,
           duration: 3.5,
@@ -1538,36 +1564,30 @@ export default function App() {
         })
       }
 
-      gsap.utils.toArray('[data-motion-project-card]').forEach((card) => {
-        gsap.fromTo(card, { autoAlpha: 0, y: 50 }, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.75,
-          ease: 'power2.out',
-          overwrite: 'auto',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 88%',
-            once: true,
-          },
-        })
-      })
-
-      gsap.utils.toArray('[data-motion-hover]').forEach((element) => {
-        const target = element
-        const onEnter = () => gsap.to(target, { y: -3, scale: 1.02, duration: 0.25, ease: 'power2.out', overwrite: true })
-        const onLeave = () => gsap.to(target, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out', overwrite: true })
-        target.addEventListener('pointerenter', onEnter)
-        target.addEventListener('pointerleave', onLeave)
-        hoverCleanups.push(() => {
-          target.removeEventListener('pointerenter', onEnter)
-          target.removeEventListener('pointerleave', onLeave)
-        })
-      })
+      gsap.set(revealTargets, { autoAlpha: 0, y: 24, transition: 'none' })
     }, root)
 
+    // Elements that enter the viewport together arrive in one callback and are staggered in page order.
+    // IntersectionObserver (rather than ScrollTrigger) keeps working when filters or late-loading content shift the layout.
+    const observer = new IntersectionObserver((entries) => {
+      const entering = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target)
+      if (!entering.length) return
+      entering.forEach((target) => observer.unobserve(target))
+      context.add(() => {
+        gsap.to(entering, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          stagger: 0.08,
+          clearProps: 'transform,opacity,visibility,transition',
+        })
+      })
+    }, { rootMargin: '0px 0px -8% 0px' })
+    revealTargets.forEach((target) => observer.observe(target))
+
     return () => {
-      hoverCleanups.forEach((cleanup) => cleanup())
+      observer.disconnect()
       context.revert()
     }
   }, [currentPath])
@@ -1575,15 +1595,13 @@ export default function App() {
   return (
     <div
       ref={appRef}
-      className="relative min-h-screen overflow-x-hidden bg-[#F5F4F0] text-[#1a1a1a] site font-body antialiased selection:bg-[#F2B56B] selection:text-white"
+      className="relative min-h-screen overflow-x-clip bg-[#F5F4F0] text-[#1a1a1a] site font-body antialiased selection:bg-[#F2B56B] selection:text-white"
     >
       <div
+        ref={backgroundRef}
         aria-hidden="true"
-        className="portfolio-background-layer pointer-events-none fixed inset-[-24px] z-0 bg-cover bg-center bg-no-repeat transition-transform duration-200 ease-out motion-reduce:transition-none"
-        style={{
-          backgroundImage: `url(${portfolioBackground})`,
-          transform: `translate3d(${backgroundOffset.x}px, ${backgroundOffset.y}px, 0) scale(1.06)`,
-        }}
+        className="portfolio-background-layer pointer-events-none fixed inset-[-24px] z-0 scale-[1.06] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${portfolioBackground})` }}
       />
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 bg-[#F5F4F0]/5" />
       <div className="relative z-10">
@@ -1602,6 +1620,7 @@ export default function App() {
         ) : (
           <>
             <Hero />
+            <TypeMarquee />
             <Projects />
             <ServicesAndSkills />
             <Workflow />

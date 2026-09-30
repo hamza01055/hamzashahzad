@@ -6,6 +6,16 @@
   --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   --font-body: 'Outfit', 'Segoe UI', sans-serif;
   --font-eyebrow: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  /* Fluid type scale: `text-display` for page titles, `text-title` for section titles. */
+  --text-display: clamp(3rem, 1.9rem + 4.2vw, 5.75rem);
+  --text-display--line-height: 0.96;
+  --text-display--letter-spacing: -0.025em;
+  --text-title: clamp(2.5rem, 1.9rem + 2.5vw, 4.25rem);
+  --text-title--line-height: 1.02;
+  --text-title--letter-spacing: -0.02em;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Serif headings across the public site (the .site root in App.jsx).
@@ -15,6 +25,11 @@
     font-family: var(--font-display);
     font-weight: 400;
     letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .site p {
+    text-wrap: pretty;
   }
 }
 
@@ -48,6 +63,14 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keeps anchor targets clear of the sticky navbar (h-20). */
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -165,9 +188,7 @@ textarea {
   }
 }
 
-[data-motion-hero],
-[data-motion-project-card],
-[data-motion-hover] {
+[data-motion-hero='visual'] {
   will-change: transform, opacity;
 }
 
@@ -180,10 +201,58 @@ textarea {
     transition: none;
   }
 
-  [data-motion-hero],
-  [data-motion-project-card],
-  [data-motion-hover] {
+  [data-motion-hero='visual'] {
     will-change: auto;
+  }
+}
+
+/* ---------- Hover feedback ---------- */
+/* Nav links: an underline that draws in from the left and exits to the right. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -6px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 350ms var(--ease-out-quint);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Arrows nudge toward where the link goes. */
+.icon-nudge,
+.icon-nudge-up {
+  flex-shrink: 0;
+  transition: transform 300ms var(--ease-out-quint);
+}
+
+:is(a, button):is(:hover, :focus-visible) > .icon-nudge,
+.group:hover .icon-nudge {
+  transform: translateX(3px);
+}
+
+:is(a, button):is(:hover, :focus-visible) > .icon-nudge-up,
+.group:hover .icon-nudge-up {
+  transform: translate(2px, -2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link::after,
+  .icon-nudge,
+  .icon-nudge-up {
+    transition: none;
   }
 }
 
@@ -195,10 +264,11 @@ textarea {
   -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
 }
 
-.skills-marquee-track {
+/* Items are spaced with margin, not gap, so the -50% loop lands exactly on the repeat. */
+.skills-marquee-track,
+.type-marquee-track {
   display: flex;
   width: max-content;
-  gap: 0.75rem;
   will-change: transform;
 }
 
@@ -221,6 +291,7 @@ textarea {
   align-items: center;
   gap: 0.55rem;
   flex-shrink: 0;
+  margin-right: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 9999px;
   padding: 0.65rem 1rem 0.65rem 0.7rem;
@@ -281,6 +352,36 @@ textarea {
   }
 
   .skills-marquee-track {
+    animation: none;
+  }
+}
+
+/* ---------- Display-type marquee (home page, below the hero) ---------- */
+.type-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.type-marquee-track {
+  animation: skills-marquee-left 70s linear infinite;
+}
+
+.type-marquee:hover .type-marquee-track {
+  animation-play-state: paused;
+}
+
+.type-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  flex-shrink: 0;
+  padding-right: 0.35em;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .type-marquee-track {
     animation: none;
   }
 }

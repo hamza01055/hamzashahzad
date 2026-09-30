@@ -1,6 +1,7 @@
 import { Fragment, memo, useEffect, useRef, useState } from 'react'
 import { getProjects, getSettings, getTeam } from '../data/store'
 import { localAnswer } from '../chat/localAnswers'
+import { sitePath } from '../paths'
 
 const STORAGE_KEY = 'hs-chat'
 const GREETING = {
@@ -37,8 +38,9 @@ const Linkified = ({ text }) => {
   return parts.map((part, index) => {
     if (index % 2 === 0) return <Fragment key={index}>{part}</Fragment>
     const isEmail = part.includes('@') && !part.startsWith('http')
-    const href = isEmail ? `mailto:${part}` : part
     const external = part.startsWith('http')
+    // Site paths like /work are written without the base path the site is served under.
+    const href = isEmail ? `mailto:${part}` : external ? part : sitePath(part)
     return (
       <a key={index} href={href} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined} className="font-semibold text-[#a36a0b] underline decoration-[#F2B56B]/50 underline-offset-2 hover:decoration-[#F2B56B] break-words">
         {part}

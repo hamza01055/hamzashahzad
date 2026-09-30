@@ -5,6 +5,7 @@ import {
   isCustomized, resetSection, exportAll, importAll,
   hasAdminPassword, setAdminPassword, checkAdminPassword, isLoggedIn, setLoggedIn,
 } from '../data/store'
+import { sitePath } from '../paths'
 
 const inputClass = 'w-full rounded-xl border border-[#e7e3dc] bg-white px-4 py-2.5 text-sm outline-none focus:border-[#F2B56B] focus:ring-2 focus:ring-[#F2B56B]/30'
 const labelClass = 'mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#6B7280]'
@@ -77,7 +78,7 @@ const Login = ({ onSuccess }) => {
         )}
         {error && <p className="text-sm font-semibold text-red-600">{error}</p>}
         <button type="submit" className={`${btn.primary} w-full`}>{firstTime ? 'Create password' : 'Sign in'}</button>
-        <a href="/" className="block text-center text-xs text-gray-400 hover:text-[#1a1a1a]">Back to website</a>
+        <a href={sitePath('/')} className="block text-center text-xs text-gray-400 hover:text-[#1a1a1a]">Back to website</a>
       </form>
     </div>
   )
@@ -256,7 +257,7 @@ const ProjectsManager = ({ projects, setProjects, notify, startNew }) => {
                 <button type="button" aria-label={`Move ${p.title} up`} onClick={() => move(index, -1)} className="rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100">↑</button>
                 <button type="button" aria-label={`Move ${p.title} down`} onClick={() => move(index, 1)} className="rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100">↓</button>
               </>}
-              <a href={`/work/${p.slug}`} target="_blank" rel="noreferrer" className="rounded-lg px-2 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-100">View</a>
+              <a href={sitePath(`/work/${p.slug}`)} target="_blank" rel="noreferrer" className="rounded-lg px-2 py-1 text-xs font-semibold text-gray-500 hover:bg-gray-100">View</a>
               <button type="button" onClick={() => setEditing(p)} className="rounded-lg px-2 py-1 text-xs font-semibold text-[#1a1a1a] hover:bg-gray-100">Edit</button>
               <button type="button" onClick={() => { if (window.confirm(`Delete "${p.title}"?`)) commit(projects.filter((x) => x.id !== p.id), 'Project deleted') }} className="rounded-lg px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">Delete</button>
             </div>
@@ -596,7 +597,7 @@ export default function AdminPanel() {
           ))}
         </nav>
         <div className="mt-auto hidden space-y-1 p-3 md:block">
-          <a href="/" target="_blank" rel="noreferrer" className="block rounded-xl px-4 py-2 text-sm text-[#6B7280] hover:bg-[#F5F4F0]">View website ↗</a>
+          <a href={sitePath('/')} target="_blank" rel="noreferrer" className="block rounded-xl px-4 py-2 text-sm text-[#6B7280] hover:bg-[#F5F4F0]">View website ↗</a>
           <button type="button" onClick={signOut} className="block w-full rounded-xl px-4 py-2 text-left text-sm text-[#6B7280] hover:bg-[#F5F4F0]">Sign out</button>
         </div>
       </aside>
